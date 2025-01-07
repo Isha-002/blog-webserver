@@ -7,4 +7,6 @@ edition = "2021"
 tokio = { version = "1" , features = ["full"]}
 axum = "0.8.0"
 tower = "0.5.0"
-chrono = { version = "0.4.0", features = ["unstable-locales"] }
+chrono = { version = "0.4.0", features = ["unstable-locales", "serde"] }
+serde = { version = "1", features = ["derive", "rc" ]}
+serde_json = "1"

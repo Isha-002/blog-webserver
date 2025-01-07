@@ -1,0 +1,23 @@
+[
+  {
+    "id": "1",
+    "image": "image",
+    "text": "hi this is my blog",
+    "author": "tomato",
+    "date": "4:52 1/07/2025",
+    "likes": 0,
+    "bookmarks": 0,
+    "comments": []
+  },
+  {
+    "id": "2",
+    "image": "image",
+    "text": "hi this is my blog",
+    "author": "tomato",
+    "date": "7:52 1/07/2025",
+    "likes": 1,
+    "bookmarks": 0,
+    "comments": []
+  }
+
+]
