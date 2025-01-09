@@ -1,23 +1,22 @@
 [
   {
-    "id": "1",
-    "image": "image",
-    "text": "hi this is my blog",
-    "author": "tomato",
-    "date": "4:52 1/07/2025",
-    "likes": 0,
-    "bookmarks": 0,
+    "id": 1,
+    "image": "https://example.com/image.jpg",
+    "text": "This is a sample blog post text.",
+    "author": "John Doe",
+    "date": "2025-01-09 14:30:00",
+    "likes": 150,
+    "bookmarks": 35,
     "comments": []
   },
   {
-    "id": "2",
-    "image": "image",
-    "text": "hi this is my blog",
-    "author": "tomato",
-    "date": "7:52 1/07/2025",
-    "likes": 1,
-    "bookmarks": 0,
+    "id": 2,
+    "image": "https://example.com/image.jpg",
+    "text": "This is a sample blog post text.",
+    "author": "John not Doe",
+    "date": "2025-01-09 14:30:00",
+    "likes": 0,
+    "bookmarks": 35,
     "comments": []
   }
-
 ]

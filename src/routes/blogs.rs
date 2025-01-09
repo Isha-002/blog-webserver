@@ -1,23 +1,32 @@
-use axum::Json;
+use std::sync::Arc;
 
-use crate::types::blog::Blog;
+use axum::{
+    extract::{self, Path, State}, http::StatusCode, response::{IntoResponse, Response}, Json
+};
 
-pub async fn blogs() -> Json<Vec<Blog>> {
-    // Json(Store::init().posts)
-    Json(vec![Blog::new(
-        crate::types::blog::BlogID("1".to_string()),
-        "image",
-        "text",
-        "author",
-        1,
-        1,
-        vec![],
-    )])
+use crate::{
+    store::Store,
+    types::blog::Blog,
+};
+
+pub async fn blogs(State(store): State<Arc<Store>>) -> Json<Vec<Blog>> {
+    Json((*store.posts).read().await.to_vec())
 }
 
-pub async fn single_blog() {}
+pub async fn single_blog(
+    State(store): State<Arc<Store>>,
+    Path(blog_id): Path<usize>,
+) -> Json<Blog> {
+    Json(store.posts.read().await[blog_id].clone())
+}
 
-pub async fn post_blog() {}
+pub async fn post_blog(
+    State(store): State<Arc<Store>>,
+    extract::Json(payload): extract::Json<Blog>,
+) -> Response {
+    store.posts.write().await.push(payload);
+    (StatusCode::OK, "blog added").into_response()
+}
 
 pub async fn put_blog() {}
 

@@ -1,22 +1,21 @@
 use std::sync::Arc;
-
-use serde::{Deserialize, Serialize};
+use tokio::sync::RwLock;
 
 use crate::types::blog::Blog;
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone)]
 pub struct Store {
-    pub posts: Vec<Blog>,
+    pub posts: Arc<RwLock<Vec<Blog>>>,
 }
 
 impl Store {
     pub fn init() -> Self {
         let file = Arc::new(include_str!("../data.json"));
         match serde_json::from_str(&file) {
-            Ok(data) => Store { posts: data },
+            Ok(data) => Store { posts: Arc::new(RwLock::new(data)) },
             Err(e) => {
-                println!("{e}");
-                Store { posts: vec![] }
+                println!("there waas an error when reading the data.json: {e}");
+                Store { posts: Arc::new(RwLock::new(vec![])) }
             }
         }
     }
