@@ -12,10 +12,14 @@ impl Store {
     pub fn init() -> Self {
         let file = Arc::new(include_str!("../data.json"));
         match serde_json::from_str(&file) {
-            Ok(data) => Store { posts: Arc::new(RwLock::new(data)) },
+            Ok(data) => Store {
+                posts: Arc::new(RwLock::new(data)),
+            },
             Err(e) => {
                 println!("there waas an error when reading the data.json: {e}");
-                Store { posts: Arc::new(RwLock::new(vec![])) }
+                Store {
+                    posts: Arc::new(RwLock::new(vec![])),
+                }
             }
         }
     }

@@ -21,9 +21,7 @@ async fn main() {
         .route("/blogs", get(blogs).post(post_blog))
         .route(
             "/blogs/{id}",
-            get(single_blog)
-                .put(put_blog)
-                .delete(delete_blog),
+            get(single_blog).put(put_blog).delete(delete_blog),
         )
         .with_state(store);
 
@@ -32,6 +30,7 @@ async fn main() {
     println!("{time} start the server on http://localhost:4445/");
     axum::serve(listener, app).await.unwrap();
 }
+
 
 
 // problems:
