@@ -1,22 +1,102 @@
 [
   {
     "id": 1,
-    "image": "https://example.com/image.jpg",
-    "text": "This is a sample blog post text.",
-    "author": "John Doe",
+    "image": "https://example.com/image1.jpg",
+    "text": "Exploring the beauty of nature.",
+    "author": "Alice Johnson",
     "date": "2025-01-09 14:30:00",
-    "likes": 150,
-    "bookmarks": 35,
+    "likes": 250,
+    "bookmarks": 50,
     "comments": []
   },
   {
     "id": 2,
-    "image": "https://example.com/image.jpg",
-    "text": "This is a sample blog post text.",
-    "author": "John not Doe",
-    "date": "2025-01-09 14:30:00",
-    "likes": 0,
+    "image": "https://example.com/image2.jpg",
+    "text": "10 tips for a healthy lifestyle.",
+    "author": "Bob Smith",
+    "date": "2025-01-10 10:00:00",
+    "likes": 120,
+    "bookmarks": 40,
+    "comments": []
+  },
+  {
+    "id": 3,
+    "image": "https://example.com/image3.jpg",
+    "text": "The best travel destinations for 2025.",
+    "author": "Clara Adams",
+    "date": "2025-01-11 08:15:00",
+    "likes": 320,
+    "bookmarks": 60,
+    "comments": []
+  },
+  {
+    "id": 4,
+    "image": "https://example.com/image4.jpg",
+    "text": "How to start your own business.",
+    "author": "David Lee",
+    "date": "2025-01-12 18:45:00",
+    "likes": 400,
+    "bookmarks": 100,
+    "comments": []
+  },
+  {
+    "id": 5,
+    "image": "https://example.com/image5.jpg",
+    "text": "Top recipes for quick meals.",
+    "author": "Emily Carter",
+    "date": "2025-01-13 12:30:00",
+    "likes": 150,
+    "bookmarks": 25,
+    "comments": []
+  },
+  {
+    "id": 6,
+    "image": "https://example.com/image6.jpg",
+    "text": "The importance of mental health.",
+    "author": "Frank Wilson",
+    "date": "2025-01-14 09:20:00",
+    "likes": 230,
+    "bookmarks": 45,
+    "comments": []
+  },
+  {
+    "id": 7,
+    "image": "https://example.com/image7.jpg",
+    "text": "Photography tips for beginners.",
+    "author": "Grace Walker",
+    "date": "2025-01-15 16:00:00",
+    "likes": 310,
+    "bookmarks": 70,
+    "comments": []
+  },
+  {
+    "id": 8,
+    "image": "https://example.com/image8.jpg",
+    "text": "A guide to minimalist living.",
+    "author": "Hannah White",
+    "date": "2025-01-16 11:10:00",
+    "likes": 180,
     "bookmarks": 35,
+    "comments": []
+  },
+  {
+    "id": 9,
+    "image": "https://example.com/image9.jpg",
+    "text": "Fitness routines for busy people.",
+    "author": "Ian Brown",
+    "date": "2025-01-17 07:45:00",
+    "likes": 270,
+    "bookmarks": 55,
+    "comments": []
+  },
+  {
+    "id": 10,
+    "image": "https://example.com/image10.jpg",
+    "text": "Understanding the basics of coding.",
+    "author": "Jack Miller",
+    "date": "2025-01-18 14:30:00",
+    "likes": 350,
+    "bookmarks": 80,
     "comments": []
   }
 ]
