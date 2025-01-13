@@ -1,7 +1,10 @@
 use std::{ptr::null, sync::Arc};
 
 use axum::{
-    extract::{self, rejection::JsonRejection, Path, Query, State}, http::StatusCode, response::{IntoResponse, Response}, Error, Json
+    extract::{self, rejection::JsonRejection, Path, Query, State},
+    http::StatusCode,
+    response::{IntoResponse, Response},
+    Error, Json,
 };
 use serde::Deserialize;
 
@@ -24,12 +27,14 @@ pub async fn blogs(
         Ok(Json(sliced_res))
     } else {
         if params.start.is_none() || params.end.is_none() {
-            return Err((StatusCode::UNPROCESSABLE_ENTITY, "missing params".to_string()));
+            return Err((
+                StatusCode::UNPROCESSABLE_ENTITY,
+                "missing params".to_string(),
+            ));
         }
         Ok(Json(res))
     }
-    }
-
+}
 
 pub async fn single_blog(
     State(store): State<Arc<Store>>,

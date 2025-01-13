@@ -31,8 +31,6 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-
-
 // problems:
 // - no idea how to implement error handling
 // - need a better solution to handle ids
