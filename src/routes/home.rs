@@ -1,3 +1,3 @@
 pub async fn home() -> &'static str {
-    "welcome!"
+    "Blog web server \nEndpoints:\n\n/blogs (GET - POST)\n/blogs/id (GET - PUT - DELETE)"
 }

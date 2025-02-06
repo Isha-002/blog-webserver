@@ -93,3 +93,15 @@ pub async fn delete_blog(
     res.remove(blog_id - 1);
     Ok(StatusCode::NO_CONTENT)
 }
+
+pub async fn blog_text() {}
+
+pub async fn put_blog_text() {}
+
+pub async fn post_blog_text() {}
+
+pub async fn blog_comments() {}
+
+pub async fn post_blog_comments() {}
+
+pub async fn delete_blog_comments() {}
