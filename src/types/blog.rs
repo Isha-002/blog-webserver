@@ -16,7 +16,6 @@ pub struct Blog {
     pub date: NaiveDateTime,
     pub likes: i64,
     pub bookmarks: i32,
-    // pub comments: Option<Vec<Comment>>,
 }
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct NewBlog {

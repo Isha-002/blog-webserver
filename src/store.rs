@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use crate::{
     error::Error,
-    types::blog::{Blog, BlogID, NewBlog, Pagination},
+    types::{blog::{Blog, BlogID, NewBlog, Pagination, Text}, comment::{Comment, NewComment}},
 };
 use sqlx::Row;
 use sqlx::{
@@ -119,8 +119,7 @@ impl Store {
             "UPDATE blogs
             SET image = $1, author = $2, date = NOW(), likes = $3, bookmarks = $4
             WHERE id = $5
-            RETURNING *
-            "
+            RETURNING *"
         )
         .bind(blog.author)
         .bind(blog.image)
@@ -154,6 +153,121 @@ impl Store {
         }
     }
 
+    pub async fn blog_text(&self, blog_id: i64) -> Result<Text, Error> {
+        match sqlx::query(
+            "SELECT * FROM texts
+            WHERE blog_id = $1"
+        )
+        .bind(blog_id)
+        .map(|row: PgRow| Text {
+            blog_id,
+            text: row.get("text")
+        })
+        .fetch_one(&self.connection)
+        .await {
+            Ok(text) => Ok(text),
+            Err(e) => Err(Error::db_query_error(e)),
+        }
+    }
 
+    pub async fn put_blog_text(&self, text: Text, blog_id: i64) -> Result<Text, Error> {
+        match sqlx::query(
+            "UPDATE texts 
+            SET text = $1
+            WHERE blog_id = $2"
+        )
+        .bind(text.text)
+        .bind(blog_id)
+        .map(|row: PgRow| Text {
+            blog_id,
+            text: row.get("text")
+        })
+        .fetch_one(&self.connection)
+        .await
+        {
+            Ok(text) => Ok(text),
+            Err(e) => Err(Error::db_query_error(e)),
+        }
+    }
+
+    // you can post blog text directly using post_blog handler this is just in case if you get silly :P
+    pub async fn post_blog_text(&self, text: Text, blog_id: i64) -> Result<Text, Error> {
+        match sqlx::query(
+            "INSERT INTO texts (blog_id, text) VALUES ($1, $2)
+            RETURNING *"
+        )
+        .bind(blog_id)
+        .bind(text.text)
+        .map({|row: PgRow| Text {
+            blog_id,
+            text: row.get("text")
+        }})
+        .fetch_one(&self.connection)
+        .await
+        {
+            Ok(text) => Ok(text),
+            Err(e) => Err(Error::db_query_error(e)),
+        }
+    }
+
+    pub async fn get_blog_comments(&self, blog_id: i64) -> Result<Vec<Comment>, Error> {
+        match sqlx::query(
+            "SELECT * FROM comments
+            WHERE blog_id = $1")
+            .bind(blog_id)
+            .map(|row: PgRow| Comment {
+                id: row.get("id"),
+                blog_id,
+                author: row.get("author"),
+                text: row.get("text"),
+                likes: row.get("likes"),
+                date: row.get("date")
+            })
+            .fetch_all(&self.connection)
+            .await
+            {
+                Ok(comments) => Ok(comments),
+                Err(e) => Err(Error::db_query_error(e)),
+            }
+    }
+
+    pub async fn post_blog_comments(&self, comment: NewComment , blog_id: i64) -> Result<Comment, Error> {
+        match sqlx::query(
+        "INSERT INTO comments 
+        (blog_id, author, text, likes)
+        VALUES ($1, $2, $3, 0)
+        RETURNING *")
+        .bind(blog_id)
+        .bind(comment.author)
+        .bind(comment.text)
+        .map(|row: PgRow| Comment {
+            id: row.get("id"),
+            blog_id,
+            author: row.get("author"),
+            text: row.get("text"),
+            likes: row.get("likes"),
+            date: row.get("date")
+        })
+        .fetch_one(&self.connection)
+        .await
+        {
+            Ok(comment) => Ok(comment),
+            Err(e) => Err(Error::db_query_error(e)),
+        }
+    }
+
+    pub async fn delete_blog_comment(&self, blog_id: i64, comment_id: i64) -> Result<bool, Error> {
+        match sqlx::query(
+            "DELETE FROM comments 
+            WHERE id = $1 AND blog_id = $2")
+            .bind(comment_id)
+            .bind(blog_id)
+            .execute(&self.connection)
+            .await
+            {
+                Ok(_) => Ok(true),
+                Err(e) => Err(Error::db_query_error(e)),
+            }
+    }
 
 }

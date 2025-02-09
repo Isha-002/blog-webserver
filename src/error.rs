@@ -41,8 +41,8 @@ impl IntoResponse for Error {
     }
 }
 
-impl From<sqlx::Error> for Error {
-    fn from(error: sqlx::Error) -> Self {
-        Self::db_query_error(error)
-    }
-}
+// impl From<sqlx::Error> for Error {
+//     fn from(error: sqlx::Error) -> Self {
+//         Self::db_query_error(error)
+//     }
+// }

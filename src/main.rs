@@ -3,11 +3,11 @@ mod routes;
 mod store;
 mod types;
 
-use axum::{routing::get, Router};
+use axum::{routing::{delete, get}, Router};
 use chrono::Local;
 use routes::{
     blogs::{
-        blog_comments, blog_text, blogs, delete_blog, delete_blog_comments, post_blog,
+        blog_comments, blog_text, blogs, delete_blog, delete_blog_comment, post_blog,
         post_blog_comments, post_blog_text, put_blog, put_blog_text, single_blog,
     },
     home::home,
@@ -31,9 +31,9 @@ async fn main() {
         .route(
             "/blogs/{id}/comments",
             get(blog_comments)
-                .post(post_blog_comments)
-                .delete(delete_blog_comments),
+                .post(post_blog_comments),
         )
+        .route("/blogs/{id}/comments/{id}", delete(delete_blog_comment))
         .with_state(store);
 
     let time = Local::now().format("%Y-%m-%d %H:%M:%S");
