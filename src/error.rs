@@ -1,10 +1,16 @@
-use axum::{extract::rejection::JsonRejection, http::StatusCode, response::IntoResponse, Json};
+use axum::{
+    extract::rejection::JsonRejection,
+    http::StatusCode,
+    response::IntoResponse,
+    Json,
+};
 use serde::Serialize;
 
 #[allow(non_camel_case_types)]
 pub enum Error {
     reject_json(JsonRejection),
     db_query_error(sqlx::Error),
+    out_of_range_offset,
     invalid_offset,
 }
 
@@ -21,12 +27,22 @@ impl IntoResponse for Error {
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Error executing the query: {error}"),
             ),
+            Error::out_of_range_offset => (
+                StatusCode::UNPROCESSABLE_ENTITY,
+                "The offset is bigger than the total items".to_string(),
+            ),
             Error::invalid_offset => (
-              StatusCode::UNPROCESSABLE_ENTITY,
-              format!("The offset is bigger than the total items"),
-          )
+                StatusCode::UNPROCESSABLE_ENTITY,
+                "The offset is invalid".to_string(),
+            ),
         };
 
         (status, Json(ErrorResponse { message })).into_response()
+    }
+}
+
+impl From<sqlx::Error> for Error {
+    fn from(error: sqlx::Error) -> Self {
+        Self::db_query_error(error)
     }
 }

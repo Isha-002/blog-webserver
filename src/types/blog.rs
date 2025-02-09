@@ -1,27 +1,31 @@
 
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
 use crate::error::Error;
-
-use super::comment::Comment;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct BlogID(pub i64);
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(sqlx::FromRow)]
 pub struct Blog {
     pub id: BlogID,
     pub image: Option<String>,
     pub author: String,
-    pub date: String,
+    pub date: NaiveDateTime,
     pub likes: i64,
     pub bookmarks: i32,
-    pub comments: Option<Vec<Comment>>,
+    // pub comments: Option<Vec<Comment>>,
+}
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct NewBlog {
+    pub image: Option<String>,
+    pub author: String,
+    pub text: String,
 }
 
-impl Blog {
-}
-
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Text {
     pub blog_id: i64, 
     pub text: String,
@@ -29,18 +33,20 @@ pub struct Text {
 
 #[derive(Debug, Deserialize)]
 pub struct Pagination {
-    pub page: Option<i64>
+    pub page: Option<i64>,
 }
 impl Pagination {
     pub fn calculate_items(&self, total_items: i64) -> Result<(i64, Option<i64>), Error> {
-        if self.page.is_none() || self.page < Some(1) {
+        if self.page.is_none() {
             return Ok((0, None));
+        } else if self.page < Some(1) {
+            return Err(Error::invalid_offset);
         }
         let page = self.page.unwrap();
         let offset = (page - 1) * 10;
         let mut limit = offset + 9;
         if offset >= total_items {
-            return Err(Error::invalid_offset);
+            return Err(Error::out_of_range_offset);
         } else if limit > total_items {
             limit = total_items; 
             return Ok((offset, Some(limit)));
