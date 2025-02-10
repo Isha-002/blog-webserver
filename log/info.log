@@ -12,3 +12,72 @@
 10/02/2025 12:57:53 DEBUG [summary: "SELECT * from blogs …"] - [db.statement: "\n\nSELECT * from blogs LIMIT $1 OFFSET $2\n"] - [rows_affected: 4] - [rows_returned: 4] - [elapsed: 960.7µs] - [elapsed_secs: 0.0009607]
 10/02/2025 12:57:53 DEBUG [summary: "SELECT COUNT(*) FROM blogs;"] - [db.statement: ""] - [rows_affected: 0] - [rows_returned: 1] - [elapsed: 306.7µs] - [elapsed_secs: 0.0003067]
 10/02/2025 12:57:53 DEBUG [summary: "SELECT * from blogs …"] - [db.statement: "\n\nSELECT * from blogs LIMIT $1 OFFSET $2\n"] - [rows_affected: 4] - [rows_returned: 4] - [elapsed: 346.4µs] - [elapsed_secs: 0.0003464]
+10/02/2025 16:26:59  INFO blog_webserver: Server started on http://localhost:4445/
+10/02/2025 16:29:06  INFO blog_webserver: Server started on http://localhost:4445/
+10/02/2025 16:29:45 ERROR http_request{method=GET matched_path="/blogs/{id}/text"}: tower_http::trace::on_failure: response failed classification=Status code: 500 Internal Server Error latency=4 ms
+10/02/2025 16:30:43  INFO blog_webserver: Server started on http://localhost:4445/
+10/02/2025 16:30:54 DEBUG http_request{method=GET}: tower_http::trace::on_request: started processing request
+10/02/2025 16:30:54 DEBUG http_request{method=GET}: tower_http::trace::on_response: finished processing request latency=0 ms status=404
+10/02/2025 16:30:56 DEBUG http_request{method=GET matched_path="/blogs/{id}/comments"}: tower_http::trace::on_request: started processing request
+10/02/2025 16:30:56 DEBUG http_request{method=GET matched_path="/blogs/{id}/comments"}: sqlx::query: summary="SELECT * FROM comments …" db.statement="\n\nSELECT * FROM comments\n            WHERE blog_id = $1\n" rows_affected=0 rows_returned=0 elapsed=2.5551ms elapsed_secs=0.0025551
+10/02/2025 16:30:56 DEBUG http_request{method=GET matched_path="/blogs/{id}/comments"}: tower_http::trace::on_response: finished processing request latency=3 ms status=200
+10/02/2025 16:36:13  INFO blog_webserver: Server started on http://localhost:4445/
+10/02/2025 16:36:29 DEBUG http_request{method=GET matched_path="/"}: tower_http::trace::on_request: started processing request
+10/02/2025 16:36:29  INFO http_request{method=GET matched_path="/"}: blog_webserver: Response: status = 200 OK, latency = 314.5µs
+10/02/2025 16:39:06  INFO blog_webserver: Server started on http://localhost:4445/
+10/02/2025 16:39:10 DEBUG REQUEST{method=GET matched_path="/"}: tower_http::trace::on_request: started processing request
+10/02/2025 16:39:10  INFO REQUEST{method=GET matched_path="/"}: blog_webserver: Response: status = 200 OK, latency = 303.9µs, {"content-type": "text/plain; charset=utf-8", "vary": "origin, access-control-request-method, access-control-request-headers", "access-control-allow-origin": "http://localhost:4446"}
+10/02/2025 16:54:31  INFO blog_webserver: Server started on http://localhost:4445/
+10/02/2025 16:54:38 DEBUG REQUEST{method=GET matched_path="/"}: tower_http::trace::on_request: started processing request
+10/02/2025 16:54:38  INFO REQUEST{method=GET matched_path="/"}: blog_webserver: RESPONSE: status = 200 OK, latency = 258.4µs
+10/02/2025 16:54:45 DEBUG REQUEST{method=GET}: tower_http::trace::on_request: started processing request
+10/02/2025 16:54:45  INFO REQUEST{method=GET}: blog_webserver: RESPONSE: status = 404 Not Found, latency = 254.6µs
+10/02/2025 16:55:24  INFO blog_webserver: Server started on http://localhost:4445/
+10/02/2025 16:55:37  INFO REQUEST{method=GET}: blog_webserver: RESPONSE: status = 404 Not Found, latency = 211.3µs
+10/02/2025 16:58:53  INFO blog_webserver: Server started on http://localhost:4445/
+10/02/2025 16:59:05  INFO REQUEST{method=GET}: blog_webserver: RESPONSE: status = 404 Not Found, latency = 262.1µs None
+10/02/2025 17:00:25  INFO blog_webserver: Server started on http://localhost:4445/
+10/02/2025 17:00:30  INFO REQUEST{method=GET matched_path="/blogs"}: blog_webserver: RESPONSE: status = [200 OK], latency = [145.1602ms] path: [None]
+10/02/2025 17:06:00  INFO blog_webserver: Server started on http://localhost:4445/
+10/02/2025 17:06:06  INFO REQUEST{method=GET matched_path="/blogs/{id}/comments"}: blog_webserver: RESPONSE: status = [200 OK], latency = [1.9718ms] path: [None]
+10/02/2025 17:06:57  INFO blog_webserver: Server started on http://localhost:4445/
+10/02/2025 17:07:00  INFO REQUEST{method=GET matched_path="/blogs/{id}/comments"}: blog_webserver: RESPONSE: status = [200 OK], latency = [2.012ms]
+10/02/2025 17:07:01  INFO REQUEST{method=GET}: blog_webserver: RESPONSE: status = [404 Not Found], latency = [102.5µs]
+10/02/2025 17:07:06  INFO REQUEST{method=GET matched_path="/blogs/{id}"}: blog_webserver: RESPONSE: status = [200 OK], latency = [1.8905ms]
+10/02/2025 17:09:52  INFO REQUEST{method=GET matched_path="/blogs"}: blog_webserver: RESPONSE: status = [422 Unprocessable Entity], latency = [1.7939ms]
+10/02/2025 17:14:15  INFO blog_webserver: Server started on http://localhost:4445/
+10/02/2025 17:14:32  INFO REQUEST{method=GET matched_path="/blogs"}: blog_webserver: 
+RESPONSE: status = [422 Unprocessable Entity], latency = [1.7445ms]
+10/02/2025 17:16:28  INFO blog_webserver: Server started on http://localhost:4445/
+10/02/2025 17:16:37  INFO REQUEST{method=GET matched_path="/blogs"}: blog_webserver: 
+RESPONSE: status = [422 Unprocessable Entity], latency = [1.9249ms]
+10/02/2025 17:18:29  INFO blog_webserver: Server started on http://localhost:4445/
+10/02/2025 17:18:41 DEBUG REQUEST{method=GET matched_path="/blogs"}: tower_http::trace::on_request: started processing request
+10/02/2025 17:18:41  INFO REQUEST{method=GET matched_path="/blogs"}: blog_webserver: 
+RESPONSE: status = [200 OK], latency = [48.9595ms]
+10/02/2025 17:18:46 DEBUG REQUEST{method=GET}: tower_http::trace::on_request: started processing request
+10/02/2025 17:18:46  INFO REQUEST{method=GET}: blog_webserver: 
+RESPONSE: status = [404 Not Found], latency = [288.4µs]
+10/02/2025 17:18:48 DEBUG REQUEST{method=GET}: tower_http::trace::on_request: started processing request
+10/02/2025 17:18:48  INFO REQUEST{method=GET}: blog_webserver: 
+RESPONSE: status = [404 Not Found], latency = [167.4µs]
+10/02/2025 17:23:09  INFO blog_webserver: Server started on http://localhost:4445/
+10/02/2025 17:24:20  INFO blog_webserver: Server started on http://localhost:4445/
+10/02/2025 17:27:11  INFO [message: Server started on http://localhost:4445/]
+10/02/2025 17:27:13  INFO request:: [message: "close"] - [time.busy: 659µs] - [time.idle: 1.25ms] [method: GET] - [matched_path: "/blogs/{id}"]
+10/02/2025 17:27:25 TRACE request:: [message: rejecting request] - [status: 400] - [body: "Invalid URL: Cannot parse `2sdsd` to a `i64`"] - [rejection_type: "axum::extract::path::FailedToDeserializePathParams"] [method: GET] - [matched_path: "/blogs/{id}"]
+10/02/2025 17:27:25  INFO request:: [message: "close"] - [time.busy: 157µs] - [time.idle: 48.5µs] [method: GET] - [matched_path: "/blogs/{id}"]
+10/02/2025 17:31:20  INFO request:: [message: "close"] - [time.busy: 372µs] - [time.idle: 391µs] [method: GET] - [matched_path: "/blogs/{id}"]
+10/02/2025 17:31:21  INFO request:: [message: "close"] - [time.busy: 283µs] - [time.idle: 315µs] [method: GET] - [matched_path: "/blogs/{id}"]
+10/02/2025 17:31:21  INFO request:: [message: "close"] - [time.busy: 300µs] - [time.idle: 314µs] [method: GET] - [matched_path: "/blogs/{id}"]
+10/02/2025 17:33:26  INFO blog_webserver: Server started on http://localhost:4445/
+10/02/2025 17:33:31  INFO request:{method=GET matched_path="/blogs/{id}"}: blog_webserver: response: status = [200 OK], latency = [2.7226ms]
+10/02/2025 17:33:33  INFO request:{method=GET matched_path="/blogs"}: blog_webserver: response: status = [200 OK], latency = [48.8526ms]
+10/02/2025 17:33:39  INFO request:{method=GET}: blog_webserver: response: status = [404 Not Found], latency = [115.2µs]
+10/02/2025 17:36:55  INFO request:{method=GET}: blog_webserver: response: status = [404 Not Found], latency = [155.1µs]
+10/02/2025 17:36:58  INFO request:{method=GET matched_path="/blogs"}: blog_webserver: response: status = [200 OK], latency = [1.5464ms]
+10/02/2025 17:36:58  INFO request:{method=GET matched_path="/blogs"}: blog_webserver: response: status = [200 OK], latency = [1.0453ms]
+10/02/2025 18:07:10  INFO blog_webserver: Server started on http://localhost:4445/
+10/02/2025 18:07:17  INFO request:{method=GET matched_path="/blogs"}: blog_webserver: response: status = [200 OK], latency = [52.4438ms]
+10/02/2025 18:07:33  INFO request:{method=GET}: blog_webserver: response: status = [404 Not Found], latency = [98.6µs]
+10/02/2025 18:07:34  INFO request:{method=GET}: blog_webserver: response: status = [404 Not Found], latency = [99µs]

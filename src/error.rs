@@ -1,5 +1,5 @@
 use axum::{
-    extract::rejection::JsonRejection,
+    // extract::rejection::JsonRejection,
     http::StatusCode,
     response::IntoResponse,
     Json,
@@ -8,7 +8,7 @@ use serde::Serialize;
 
 #[allow(non_camel_case_types)]
 pub enum Error {
-    reject_json(JsonRejection),
+    // reject_json(JsonRejection),
     db_query_error(sqlx::Error),
     out_of_range_offset,
     invalid_offset,
@@ -22,7 +22,7 @@ impl IntoResponse for Error {
         }
 
         let (status, message) = match self {
-            Error::reject_json(rejection) => (rejection.status(), rejection.body_text()),
+            // Error::reject_json(rejection) => (rejection.status(), rejection.body_text()),
             Error::db_query_error(error) => (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Error executing the query: {error}"),

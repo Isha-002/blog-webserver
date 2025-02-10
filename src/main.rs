@@ -10,6 +10,7 @@ use axum::{
     Router,
 };
 use chrono::Local;
+use clap::{command, Arg};
 use routes::{
     blogs::{
         blog_comments, blog_text, blogs, delete_blog, delete_blog_comment, post_blog,
@@ -27,6 +28,66 @@ use types::custome_time::CustomTimer;
 
 #[tokio::main]
 async fn main() {
+    let arguments = 
+        command!().about("This is a web server for managing blog posts, text, and comments.")
+        // you can pass arguments like this:
+        .arg(
+            // -d or --db-url
+            Arg::new("database url")
+                .short('d')
+                .long("db-url")
+                .aliases(["db", "url", "database", "psql", "dburl", "db_url"])
+                .help("a url that connects your postgres database to the server")
+        )
+        .arg(
+            // -o or --open-port
+            Arg::new("set origin")
+                .short('o')
+                .long("open-port")
+                .aliases(["origin", "open", "openport"])
+                .help("this argument exposes one port for the frontend to access the server (Default: 4446)")
+        )
+        .arg(
+            // --log
+            Arg::new("log level").long("log")
+            .help("assign the log level (Default: info) - options(debug, info, warn, error)")
+        )
+        .arg(
+            // -p or --port or --server
+            Arg::new("server port")
+                .short('p')
+                .long("port")
+                .alias("server")
+                .help("expose a port for the server to listen to (Default: 4445)")
+        )
+        .get_matches();
+
+        let db_url = arguments
+        .get_one::<String>("database url")
+        .cloned()
+        .unwrap_or_else(|| "postgres://postgres:4431@localhost:5432/blog_api".to_string());
+
+    let server_port = arguments
+        .get_one::<String>("server port")
+        .cloned()
+        .unwrap_or_else(|| "4445".to_string());
+
+    let origin = arguments
+        .get_one("set origin")
+        .cloned()
+        .unwrap_or_else(|| "4446".to_string());
+
+    let log_level = arguments
+        .get_one::<String>("log level")
+        .cloned()
+        .unwrap_or_else(|| "info".to_string());
+
+    println!("Database URL: {}", db_url);
+    println!("Server Port: {}", server_port);
+    println!("Allow Origin on Port: {}", origin);
+    println!("Log Level: {}\n", log_level);
+
+
     let timer = CustomTimer;
     create_dir_all("log").expect("failed to create log directory");
     let file = OpenOptions::new()
@@ -57,7 +118,7 @@ async fn main() {
     let store = Store::new("postgres://postgres:4431@localhost:5432/blog_api").await;
 
     let cors = CorsLayer::new()
-        .allow_origin(AllowOrigin::exact("http://localhost:4446".parse().unwrap()))
+        .allow_origin(AllowOrigin::exact("0.0.0.0:4446".parse().unwrap()))
         .allow_methods(AllowMethods::list([
             Method::GET,
             Method::POST,
