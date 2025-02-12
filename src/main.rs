@@ -2,15 +2,16 @@ mod error;
 mod routes;
 mod store;
 mod types;
+mod utils;
 use std::fs::{create_dir_all, OpenOptions};
 
 use axum::{
-    http::{self, Method},
+    http::{self, HeaderValue, Method},
     routing::{delete, get},
     Router,
 };
 use chrono::Local;
-use clap::{command, Arg};
+use owo_colors::OwoColorize;
 use routes::{
     blogs::{
         blog_comments, blog_text, blogs, delete_blog, delete_blog_comment, post_blog,
@@ -24,69 +25,75 @@ use tracing_subscriber::{
     fmt::format::{self, FmtSpan},
     prelude::*,
 };
-use types::custome_time::CustomTimer;
+use types::custom_time::CustomTimer;
+use utils::{
+    arguments::arguments,
+    setting::{config_builder, LogLevel, ServerConfig},
+};
 
 #[tokio::main]
 async fn main() {
-    let arguments = 
-        command!().about("This is a web server for managing blog posts, text, and comments.")
-        // you can pass arguments like this:
-        .arg(
-            // -d or --db-url
-            Arg::new("database url")
-                .short('d')
-                .long("db-url")
-                .aliases(["db", "url", "database", "psql", "dburl", "db_url"])
-                .help("a url that connects your postgres database to the server")
-        )
-        .arg(
-            // -o or --open-port
-            Arg::new("set origin")
-                .short('o')
-                .long("open-port")
-                .aliases(["origin", "open", "openport"])
-                .help("this argument exposes one port for the frontend to access the server (Default: 4446)")
-        )
-        .arg(
-            // --log
-            Arg::new("log level").long("log")
-            .help("assign the log level (Default: info) - options(debug, info, warn, error)")
-        )
-        .arg(
-            // -p or --port or --server
-            Arg::new("server port")
-                .short('p')
-                .long("port")
-                .alias("server")
-                .help("expose a port for the server to listen to (Default: 4445)")
-        )
-        .get_matches();
+    println!("{}", "Starting the application...".magenta());
 
-        let db_url = arguments
+    let arguments = arguments();
+
+    let db_url = arguments
         .get_one::<String>("database url")
         .cloned()
         .unwrap_or_else(|| "postgres://postgres:4431@localhost:5432/blog_api".to_string());
 
     let server_port = arguments
-        .get_one::<String>("server port")
+        .get_one::<u16>("server port")
         .cloned()
-        .unwrap_or_else(|| "4445".to_string());
+        .unwrap_or(4445);
 
     let origin = arguments
-        .get_one("set origin")
+        .get_one::<u16>("set origin")
         .cloned()
-        .unwrap_or_else(|| "4446".to_string());
+        .unwrap_or(4446);
 
     let log_level = arguments
         .get_one::<String>("log level")
         .cloned()
         .unwrap_or_else(|| "info".to_string());
 
-    println!("Database URL: {}", db_url);
-    println!("Server Port: {}", server_port);
-    println!("Allow Origin on Port: {}", origin);
-    println!("Log Level: {}\n", log_level);
+    // let this be here for when we get in trouble
+    let _construct_config = arguments.get_one::<bool>("config").cloned().unwrap_or(true);
 
+    let config_type = ServerConfig {
+        db_url: db_url.clone(),
+        server_port,
+        origin_port: origin,
+        log_level: log_level.parse::<LogLevel>().unwrap_or(LogLevel::info),
+    };
+
+    let config = match config_builder(config_type) {
+        Ok(c) => c,
+        Err(e) => {
+            panic!("Couldn't construct {} File: {e}\n\nRestart the App or turn off this feature using {}", "config".bright_red(), "--save=false")
+        }
+    };
+
+    println!(
+        "{} {}",
+        "Database URL:".cyan(),
+        config.db_url.bright_black()
+    );
+    println!(
+        "{} {}",
+        "Server Port:".cyan(),
+        config.server_port.bright_black()
+    );
+    println!(
+        "{} {}",
+        "Allow Origin on Port:".cyan(),
+        config.origin_port.bright_black()
+    );
+    println!(
+        "{} {}\n",
+        "Log Level:".cyan(),
+        config.log_level.bright_black()
+    );
 
     let timer = CustomTimer;
     create_dir_all("log").expect("failed to create log directory");
@@ -97,8 +104,12 @@ async fn main() {
         .expect("couldn't open or create the log file");
     let (none_blocking, _worker_guard) = tracing_appender::non_blocking(file);
 
-    let log_filter = std::env::var("RUST_LOG")
-        .unwrap_or_else(|_| "blog_api=info,tower_http=info,axum::rejection=trace".to_owned());
+    let log_filter = std::env::var("RUST_LOG").unwrap_or_else(|_| {
+        format!(
+            "blog_api={},tower_http={},axum::rejection=trace",
+            config.log_level, config.log_level
+        )
+    });
     tracing_subscriber::fmt()
         .with_timer(timer)
         .with_writer(none_blocking)
@@ -115,10 +126,19 @@ async fn main() {
         )
         .init();
 
-    let store = Store::new("postgres://postgres:4431@localhost:5432/blog_api").await;
+    let store = Store::new(&config.db_url).await;
 
     let cors = CorsLayer::new()
-        .allow_origin(AllowOrigin::exact("0.0.0.0:4446".parse().unwrap()))
+        .allow_origin(AllowOrigin::exact(
+            format!("0.0.0.0:{}", config.origin_port)
+                .parse()
+                .unwrap_or_else(|_|{
+                    println!(
+                        "Due to an unexpected error Allow origin value change to 0.0.0.0:9999"
+                    );
+                    HeaderValue::from_static("0.0.0.0:9999")
+                })
+        ))
         .allow_methods(AllowMethods::list([
             Method::GET,
             Method::POST,
@@ -147,8 +167,13 @@ async fn main() {
         .layer(cors);
 
     let time = Local::now().format("%Y-%m-%d %H:%M:%S");
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:4445").await.unwrap();
-    println!("{time} start the server on http://localhost:4445/");
-    tracing::info!("Server started on http://localhost:4445/");
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", config.server_port)).await.unwrap();
+    let print_server_start = format!("{time} start the server on http://localhost:{}/", config.server_port);
+    println!("{}", print_server_start);
+    tracing::info!(print_server_start);
     axum::serve(listener, app).await.unwrap();
 }
+
+// todos
+// reading and writing configs to a toml file [done]
+// automatically read from a migration file if not exist create one with the defaults provided
