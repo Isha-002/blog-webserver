@@ -42,15 +42,17 @@ async fn main() {
         .cloned()
         .unwrap_or_else(|| "postgres://postgres:4431@localhost:5432/blog_api".to_string());
 
-    let server_port = arguments
+        let server_port = arguments
         .get_one::<u16>("server port")
         .cloned()
-        .unwrap_or(4445);
-
+        .unwrap_or(4445)
+        .to_string();
+    
     let origin = arguments
         .get_one::<u16>("set origin")
         .cloned()
-        .unwrap_or(4446);
+        .unwrap_or(4446)
+        .to_string();
 
     let log_level = arguments
         .get_one::<String>("log level")
