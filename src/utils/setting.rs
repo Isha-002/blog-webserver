@@ -68,7 +68,7 @@ pub fn config_builder(args: ServerConfig) -> Result<ServerConfig> {
         );
     } else {
         let conf_blue = "config".bright_green();
-        println!("\nCouldnt find a {} file! Trying to constructing one...\n((you can directly modify values from the {} file or passing them through Arguments when the you start application))\n",
+        println!("\nCouldnt find a {} file! Trying to construct one...\n((you can directly modify values from the {} file or passing them through Arguments when the you start application))\n",
         conf_blue,
         conf_blue);
 

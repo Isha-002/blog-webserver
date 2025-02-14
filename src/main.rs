@@ -6,9 +6,7 @@ mod utils;
 use std::fs::{create_dir_all, OpenOptions};
 
 use axum::{
-    http::{self, HeaderValue, Method},
-    routing::{delete, get},
-    Router,
+    http::{self, HeaderValue, Method, StatusCode}, response::{Html, IntoResponse}, routing::{delete, get}, Router
 };
 use chrono::Local;
 use owo_colors::OwoColorize;
@@ -20,7 +18,7 @@ use routes::{
     home::home,
 };
 use store::Store;
-use tower_http::cors::{AllowHeaders, AllowMethods, AllowOrigin, CorsLayer};
+use tower_http::{cors::{AllowHeaders, AllowMethods, AllowOrigin, CorsLayer}, services::ServeDir};
 use tracing_subscriber::{
     fmt::format::{self, FmtSpan},
     prelude::*,
@@ -132,13 +130,13 @@ async fn main() {
 
     let cors = CorsLayer::new()
         .allow_origin(AllowOrigin::exact(
-            format!("0.0.0.0:{}", config.origin_port)
+            format!("http://localhost:{}", config.origin_port)
                 .parse()
                 .unwrap_or_else(|_|{
                     println!(
-                        "Due to an unexpected error Allow origin value change to 0.0.0.0:9999"
+                        "Due to an unexpected error Allow origin value change to http://localhost:9999"
                     );
-                    HeaderValue::from_static("0.0.0.0:9999")
+                    HeaderValue::from_static("http://localhost:9999")
                 })
         ))
         .allow_methods(AllowMethods::list([
@@ -150,7 +148,6 @@ async fn main() {
         .allow_headers(AllowHeaders::list([http::header::CONTENT_TYPE]));
 
     let app = Router::new()
-        .route("/", get(home))
         .route("/blogs", get(blogs).post(post_blog))
         .route(
             "/blogs/{id}",
@@ -166,7 +163,8 @@ async fn main() {
         )
         .route("/blogs/{id}/comments/{id}", delete(delete_blog_comment))
         .with_state(store)
-        .layer(cors);
+        .layer(cors)
+        .fallback_service(ServeDir::new("static/dist"));
 
     let time = Local::now().format("%Y-%m-%d %H:%M:%S");
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", config.server_port)).await.unwrap();
@@ -178,4 +176,3 @@ async fn main() {
 
 // todos
 // reading and writing configs to a toml file [done]
-// automatically read from a migration file if not exist create one with the defaults provided
