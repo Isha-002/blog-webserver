@@ -4,29 +4,32 @@ mod store;
 mod types;
 mod utils;
 use std::fs::{create_dir_all, OpenOptions};
-
+use tracing::error;
 use axum::{
-    http::{self, HeaderValue, Method, StatusCode}, response::{Html, IntoResponse}, routing::{delete, get}, Router
+    http::{self, HeaderValue, Method},
+    routing::{delete, get},
+    Router,
 };
 use chrono::Local;
 use owo_colors::OwoColorize;
-use routes::{
+use routes::
     blogs::{
         blog_comments, blog_text, blogs, delete_blog, delete_blog_comment, post_blog,
         post_blog_comments, post_blog_text, put_blog, put_blog_text, single_blog,
-    },
-    home::home,
-};
+    };
+
 use store::Store;
-use tower_http::{cors::{AllowHeaders, AllowMethods, AllowOrigin, CorsLayer}, services::ServeDir};
+use tower_http::{
+    cors::{AllowHeaders, AllowMethods, AllowOrigin, CorsLayer},
+    services::ServeDir,
+};
 use tracing_subscriber::{
     fmt::format::{self, FmtSpan},
     prelude::*,
 };
 use types::custom_time::CustomTimer;
 use utils::{
-    arguments::arguments,
-    setting::{config_builder, LogLevel, ServerConfig},
+    arguments::arguments, migration::migrate, setting::{config_builder, LogLevel, ServerConfig}
 };
 
 #[tokio::main]
@@ -40,12 +43,12 @@ async fn main() {
         .cloned()
         .unwrap_or_else(|| "postgres://postgres:4431@localhost:5432/blog_api".to_string());
 
-        let server_port = arguments
+    let server_port = arguments
         .get_one::<u16>("server port")
         .cloned()
         .unwrap_or(4445)
         .to_string();
-    
+
     let origin = arguments
         .get_one::<u16>("set origin")
         .cloned()
@@ -128,6 +131,16 @@ async fn main() {
 
     let store = Store::new(&config.db_url).await;
 
+    match migrate(&store).await {
+        Ok(_) => {
+            println!("{}", "Migration successfully executed".on_truecolor(250, 156, 28));
+        }
+        Err(e) => {
+            error!("Migration failed: {}", e);
+            println!("Migration failed: {}", e);
+        }
+    }
+    
     let cors = CorsLayer::new()
         .allow_origin(AllowOrigin::exact(
             format!("http://localhost:{}", config.origin_port)
@@ -167,12 +180,20 @@ async fn main() {
         .fallback_service(ServeDir::new("static/dist"));
 
     let time = Local::now().format("%Y-%m-%d %H:%M:%S");
-    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", config.server_port)).await.unwrap();
-    let print_server_start = format!("{time} start the server on http://localhost:{}/", config.server_port);
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", config.server_port))
+        .await
+        .unwrap();
+    let print_server_start = format!(
+        "{time} start the server on http://localhost:{}/",
+        config.server_port
+    );
     println!("{}", print_server_start);
     tracing::info!(print_server_start);
     axum::serve(listener, app).await.unwrap();
 }
 
 // todos
-// reading and writing configs to a toml file [done]
+
+// trace errors when returning them
+// migration
+// 2 4 2

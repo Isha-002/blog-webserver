@@ -1,4 +1,3 @@
-
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
@@ -7,8 +6,7 @@ use crate::error::Error;
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct BlogID(pub i64);
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
-#[derive(sqlx::FromRow)]
+#[derive(Debug, Clone, Deserialize, Serialize, sqlx::FromRow)]
 pub struct Blog {
     pub id: BlogID,
     pub image: Option<String>,
@@ -26,7 +24,7 @@ pub struct NewBlog {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Text {
-    pub blog_id: i64, 
+    pub blog_id: i64,
     pub text: String,
 }
 
@@ -47,7 +45,7 @@ impl Pagination {
         if offset >= total_items {
             return Err(Error::out_of_range_offset);
         } else if limit > total_items {
-            limit = total_items; 
+            limit = total_items;
             return Ok((offset, Some(limit)));
         }
         Ok((offset, Some(limit)))

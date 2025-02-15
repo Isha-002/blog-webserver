@@ -7,7 +7,10 @@ use axum::{
 use crate::{
     error::Error,
     store::Store,
-    types::{blog::{Blog, NewBlog, Pagination, Text}, comment::{Comment, NewComment}},
+    types::{
+        blog::{Blog, NewBlog, Pagination, Text},
+        comment::{Comment, NewComment},
+    },
 };
 
 pub async fn blogs(
@@ -76,7 +79,7 @@ pub async fn put_blog_text(
     Path(blog_id): Path<i64>,
     Json(payload): Json<Text>,
 ) -> Result<Json<Text>, Error> {
-    match store.put_blog_text(payload ,blog_id).await {
+    match store.put_blog_text(payload, blog_id).await {
         Ok(res) => Ok(Json(res)),
         Err(e) => Err(e),
     }
@@ -92,7 +95,6 @@ pub async fn post_blog_text(
         Err(e) => Err(e),
     }
 }
-
 
 pub async fn blog_comments(
     State(store): State<Store>,
