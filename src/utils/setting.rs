@@ -99,7 +99,12 @@ pub fn config_builder(
         conf_blue,
         conf_blue);
 
-        let default_config = ServerConfig::default();
+        let default_config = ServerConfig {
+            db_url: default_db_url(),
+            server_port: default_server_port(),
+            origin_port: default_origin_port(),
+            log_level: default_log_level()
+        };
         let toml_string = toml::to_string_pretty(&default_config)?;
 
         let mut file = fs::File::create(config_path)?;
@@ -114,10 +119,10 @@ pub fn config_builder(
         config = config.set_override("db_url", db_url)?;
     }
     if let Some(server_port) = cli_server_port {
-        config = config.set_override("server_port", server_port)?;
+        config = config.set_override("server_port", server_port.to_string())?;
     }
     if let Some(origin_port) = cli_origin_port {
-        config = config.set_override("origin_port", origin_port)?;
+        config = config.set_override("origin_port", origin_port.to_string())?;
     }
     if let Some(log_level) = cli_log_level {
         config = config.set_override("log_level", log_level)?;
@@ -125,7 +130,7 @@ pub fn config_builder(
 
     let result: ServerConfig = config.build()?.try_deserialize()?;
 
-    let toml_string = toml::to_string_pretty(&result)?;
-    fs::write(config_path, toml_string)?;
+    // let toml_string = toml::to_string_pretty(&result)?;
+    // fs::write(config_path, toml_string)?;
     Ok(result)
 }
