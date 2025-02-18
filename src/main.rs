@@ -29,7 +29,7 @@ use tracing_subscriber::{
 };
 use types::custom_time::CustomTimer;
 use utils::{
-    arguments::arguments, migration::migrate, setting::{config_builder, LogLevel, ServerConfig}
+    arguments::arguments, migration::migrate, setting::config_builder
 };
 
 #[tokio::main]
@@ -40,40 +40,28 @@ async fn main() {
 
     let db_url = arguments
         .get_one::<String>("database url")
-        .cloned()
-        .unwrap_or_else(|| "postgres://postgres:4431@localhost:5432/blog_api".to_string());
+        .cloned();
 
     let server_port = arguments
         .get_one::<u16>("server port")
-        .cloned()
-        .unwrap_or(4445)
-        .to_string();
+        .cloned();
 
     let origin = arguments
         .get_one::<u16>("set origin")
-        .cloned()
-        .unwrap_or(4446)
-        .to_string();
+        .cloned();
 
     let log_level = arguments
         .get_one::<String>("log level")
-        .cloned()
-        .unwrap_or_else(|| "info".to_string());
+        .cloned();
 
     // let this be here for when we get in trouble
     let _construct_config = arguments.get_one::<bool>("config").cloned().unwrap_or(true);
 
-    let config_type = ServerConfig {
-        db_url: db_url.clone(),
-        server_port,
-        origin_port: origin,
-        log_level: log_level.parse::<LogLevel>().unwrap_or(LogLevel::info),
-    };
 
-    let config = match config_builder(config_type) {
+    let config = match config_builder(db_url, server_port, origin, log_level) {
         Ok(c) => c,
         Err(e) => {
-            panic!("Couldn't construct {} File: {e}\n\nRestart the App or turn off this feature using {}", "config".bright_red(), "--save=false")
+            panic!("Couldn't construct {} File: {e}", "config".bright_red())
         }
     };
 
@@ -195,5 +183,16 @@ async fn main() {
 // todos
 
 // trace errors when returning them
-// migration
+// my db support persian
+// CREATE DATABASE blogs
+//     ENCODING 'UTF8'
+//     LC_COLLATE 'en_US.UTF-8'
+//     LC_CTYPE 'en_US.UTF-8';
+// SHOW LC_COLLATE;
+// CREATE TABLE blogs (
+//     id BIGSERIAL PRIMARY KEY,
+//     title TEXT COLLATE "fa_IR.UTF-8", -- Persian collation for sorting
+//     content TEXT
+// );
+// Content-Type: text/html; charset=utf-8.
 // 2 4 2
