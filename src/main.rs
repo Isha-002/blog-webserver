@@ -186,13 +186,8 @@ async fn main() {
 // my db support persian
 // CREATE DATABASE blogs
 //     ENCODING 'UTF8'
-//     LC_COLLATE 'en_US.UTF-8'
-//     LC_CTYPE 'en_US.UTF-8';
-// SHOW LC_COLLATE;
-// CREATE TABLE blogs (
-//     id BIGSERIAL PRIMARY KEY,
-//     title TEXT COLLATE "fa_IR.UTF-8", -- Persian collation for sorting
-//     content TEXT
-// );
-// Content-Type: text/html; charset=utf-8.
+//     LC_COLLATE 'fa_IR.UTF-8'
+//     LC_CTYPE 'fa_IR.UTF-8';
+
+// req headers: (Content-Type: text/html; charset=utf-8)
 // 2 4 2

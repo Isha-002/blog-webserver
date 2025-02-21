@@ -44,7 +44,7 @@ impl fmt::Display for LogLevel {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Default)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct ServerConfig {
     #[serde(default = "default_db_url")]
     pub db_url: String,
@@ -68,6 +68,17 @@ fn default_origin_port() -> String {
 
 fn default_log_level() -> LogLevel {
     LogLevel::info
+}
+
+impl Default for ServerConfig {
+    fn default() -> Self {
+        Self {
+            db_url: default_db_url(),
+            server_port: default_server_port(),
+            origin_port: default_origin_port(),
+            log_level: default_log_level(),
+        }
+    }
 }
 
 pub fn config_builder(
@@ -99,12 +110,7 @@ pub fn config_builder(
         conf_blue,
         conf_blue);
 
-        let default_config = ServerConfig {
-            db_url: default_db_url(),
-            server_port: default_server_port(),
-            origin_port: default_origin_port(),
-            log_level: default_log_level()
-        };
+        let default_config = ServerConfig::default();
         let toml_string = toml::to_string_pretty(&default_config)?;
 
         let mut file = fs::File::create(config_path)?;
@@ -112,6 +118,11 @@ pub fn config_builder(
 
         println!("{} created successfuly!", "config.toml".bright_yellow());
     }
+
+    let has_args = cli_db_url.is_some()
+    || cli_server_port.is_some()
+    || cli_origin_port.is_some()
+    || cli_log_level.is_some();
 
     let mut config = Config::builder().add_source(File::new(config_path, FileFormat::Toml));
 
@@ -130,7 +141,11 @@ pub fn config_builder(
 
     let result: ServerConfig = config.build()?.try_deserialize()?;
 
-    // let toml_string = toml::to_string_pretty(&result)?;
-    // fs::write(config_path, toml_string)?;
+    if has_args {
+        let updated_toml = toml::to_string_pretty(&result)?;
+        fs::write(config_path, updated_toml)?;
+    }
+
+
     Ok(result)
 }
