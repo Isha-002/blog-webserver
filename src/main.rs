@@ -183,7 +183,7 @@ async fn main() {
 // todos
 
 // trace errors when returning them
-// my db support persian
+// persian support
 // CREATE DATABASE blogs
 //     ENCODING 'UTF8'
 //     LC_COLLATE 'fa_IR.UTF-8'

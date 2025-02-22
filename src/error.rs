@@ -1,3 +1,5 @@
+use std::fmt;
+
 use axum::{
     // extract::rejection::JsonRejection,
     http::StatusCode,
@@ -38,5 +40,24 @@ impl IntoResponse for Error {
         };
 
         (status, Json(ErrorResponse { message })).into_response()
+    }
+}
+
+
+#[allow(non_camel_case_types)]
+pub enum AppError {
+    no_db_url,
+    invalid_db_url,
+    db_connection_failed
+}
+
+impl fmt::Display for AppError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+
+        match self {
+            AppError::no_db_url => write!(f, "You didn't enter any database URL"),
+            AppError::invalid_db_url => write!(f, "The database URL you entered is invalid"),
+            AppError::db_connection_failed => write!(f, "Failed to connect to the database"),
+        }
     }
 }

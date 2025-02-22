@@ -6,6 +6,7 @@ use crate::{
         blog::{Blog, BlogID, NewBlog, Pagination, Text},
         comment::{Comment, NewComment},
     },
+    utils::input::db_input,
 };
 use sqlx::Row;
 use sqlx::{
@@ -27,7 +28,15 @@ impl Store {
             .await
         {
             Ok(pool) => pool,
-            Err(e) => panic!("coundln't establish a database connection: {e:?}"),
+            Err(_) => {
+                eprintln!("coundln't establish a database connection");
+                PgPoolOptions::new()
+                    .max_connections(10)
+                    .acquire_timeout(Duration::from_secs(3))
+                    .connect(&db_input())
+                    .await
+                    .unwrap()
+            }
         };
         Store {
             connection: db_pool,

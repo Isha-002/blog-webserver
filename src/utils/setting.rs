@@ -56,7 +56,7 @@ pub struct ServerConfig {
     pub log_level: LogLevel,
 }
 fn default_db_url() -> String {
-    "postgres://postgres:4431@localhost:5432/blogs".into()
+    "postgres://postgres:4431@localhost:5432/blog".into()
 }
 fn default_server_port() -> String {
     "4445".into()
